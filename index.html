@@ -294,7 +294,7 @@
                         <label for="fullName">
                             Full Name <span class="required">*</span>
                         </label>
-                        <input type="text" id="fullName" required aria-required="true" placeholder="Sarah Ward" maxlength="100" pattern="^[a-zA-Z\s\-']+$" title="Name can only contain letters, spaces, hyphens, and apostrophes">
+                        <input type="text" id="fullName" required aria-required="true" placeholder="Johan Cilliers" maxlength="100" pattern="^[a-zA-Z\s\-']+$" title="Name can only contain letters, spaces, hyphens, and apostrophes">
                         <div class="error-message" id="fullName-error">Please enter your full name</div>
                     </div>
 
@@ -302,36 +302,51 @@
                         <label for="jobTitle">
                             Job Title <span class="required">*</span>
                         </label>
-                        <input type="text" id="jobTitle" required aria-required="true" placeholder="Head of Sales & Marketing" maxlength="100">
+                        <input type="text" id="jobTitle" required aria-required="true" placeholder="Business Automation Specialist" maxlength="100">
                         <div class="error-message" id="jobTitle-error">Please enter your job title</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="phone1">
-                            Primary Phone <span class="hint">(optional)</span>
+                        <label for="profileImage">
+                            Profile Image <span class="hint">(optional)</span>
                         </label>
-                        <input type="text" id="phone1" placeholder="01245 477 449" maxlength="30" pattern="^[\d\s\+\-\(\)]+$" title="Phone number can only contain digits, spaces, and standard phone characters">
+                        <input type="file" id="profileImageFile" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('profileImageFile').click()" style="width: auto; margin-bottom: 10px;">
+                            Upload Profile Picture
+                        </button>
+                        <div id="imagePreview" style="display: none; margin-top: 10px;">
+                            <img id="uploadedImage" src="" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ff6600;">
+                            <button type="button" onclick="removeImage()" style="margin-left: 10px; padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Remove</button>
+                        </div>
+                        <input type="hidden" id="profileImageData" value="">
                     </div>
 
                     <div class="form-group">
-                        <label for="phone2">
-                            Secondary Phone <span class="hint">(optional)</span>
+                        <label for="phone">
+                            Phone Number <span class="hint">(optional)</span>
                         </label>
-                        <input type="text" id="phone2" placeholder="07894 860023" maxlength="30" pattern="^[\d\s\+\-\(\)]+$" title="Phone number can only contain digits, spaces, and standard phone characters">
+                        <input type="text" id="phone" placeholder="+27 82 847 5680" maxlength="30" pattern="^[\d\s\+\-\(\)]+$" title="Phone number can only contain digits, spaces, and standard phone characters">
                     </div>
 
                     <div class="form-group">
                         <label for="linkedinUrl">
                             LinkedIn URL <span class="hint">(optional)</span>
                         </label>
-                        <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/sarah-ward" maxlength="200" pattern="^https?:\/\/(www\.)?linkedin\.com\/.*$" title="Please enter a valid LinkedIn URL">
+                        <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/johancilliers" maxlength="200" pattern="^https?:\/\/(www\.)?linkedin\.com\/.*$" title="Please enter a valid LinkedIn URL">
                     </div>
 
                     <div class="form-group">
-                        <label for="linkedinText">
-                            LinkedIn Link Text <span class="hint">(optional, default: "Connect on LinkedIn")</span>
+                        <label for="companyName">
+                            Company Name <span class="hint">(optional, for branding)</span>
                         </label>
-                        <input type="text" id="linkedinText" placeholder="Connect on LinkedIn" maxlength="50">
+                        <input type="text" id="companyName" placeholder="fseDigital" maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyTagline">
+                            Company Tagline <span class="hint">(optional)</span>
+                        </label>
+                        <input type="text" id="companyTagline" placeholder="freelanceSEO" maxlength="50">
                     </div>
 
                     <div class="button-group">
@@ -364,6 +379,34 @@
 
     <script>
         'use strict';
+        
+        let uploadedImageData = '';
+        
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    alert('Image size must be less than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImageData = e.target.result;
+                    document.getElementById('profileImageData').value = uploadedImageData;
+                    document.getElementById('uploadedImage').src = uploadedImageData;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function removeImage() {
+            uploadedImageData = '';
+            document.getElementById('profileImageData').value = '';
+            document.getElementById('profileImageFile').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+        }
         
         // Security: Enhanced HTML escaping function
         function escapeHtml(unsafe) {
@@ -462,7 +505,7 @@
         }
         
         // Auto-save form data to localStorage
-        const formInputs = ['fullName', 'jobTitle', 'phone1', 'phone2', 'linkedinUrl', 'linkedinText'];
+        const formInputs = ['fullName', 'jobTitle', 'phone', 'linkedinUrl', 'companyName', 'companyTagline'];
         
         // Load saved data on page load
         window.addEventListener('DOMContentLoaded', () => {
@@ -559,10 +602,11 @@
             // Get and sanitize input values
             const fullName = sanitizeInput(document.getElementById('fullName').value, 'name');
             const jobTitle = sanitizeInput(document.getElementById('jobTitle').value, 'text');
-            const phone1 = sanitizeInput(document.getElementById('phone1').value, 'phone');
-            const phone2 = sanitizeInput(document.getElementById('phone2').value, 'phone');
+            const profileImage = document.getElementById('profileImageData').value || uploadedImageData || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSIjZmZmIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2ZmNjYwMCIvPjxwYXRoIGQ9Ik01MCA1NWMtMTEgMC0yMCA5LTIwIDIwdjVoNDB2LTVjMC0xMS05LTIwLTIwLTIweiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjEyIiBmaWxsPSIjZmZmIi8+PC9zdmc+';
+            const phone = sanitizeInput(document.getElementById('phone').value, 'phone');
             const linkedinUrl = validateUrl(document.getElementById('linkedinUrl').value.trim());
-            const linkedinText = sanitizeInput(document.getElementById('linkedinText').value || 'Connect on LinkedIn', 'text');
+            const companyName = sanitizeInput(document.getElementById('companyName').value || 'fseDigital', 'text');
+            const companyTagline = sanitizeInput(document.getElementById('companyTagline').value || 'freelanceSEO', 'text');
             
             // Additional validation
             if (!fullName || !jobTitle) {
@@ -570,40 +614,86 @@
                 return;
             }
 
-            // Build phone HTML with table structure
-            let phoneHtml = '';
-            if (phone1 || phone2) {
-                const phoneDisplay = [phone1, phone2].filter(p => p).map(p => escapeHtml(p)).join(' | ');
-                phoneHtml = phoneDisplay;
-            }
+            // Get base URL for images
+            const baseUrl = window.location.href.replace('index.html', '');
+            
+            // Partner badges with actual images
+            const partnerBadges = `
+                <table cellspacing="0" cellpadding="0" border="0" style="margin-top:15px;">
+                    <tr>
+                        <td colspan="5">
+                            <img src="${baseUrl}Images/1729853131438.png" alt="Google Partner" style="height:40px;display:inline-block;margin-right:8px;"/>
+                            <img src="${baseUrl}Images/images.png" alt="Bing Partner" style="height:40px;display:inline-block;margin-right:8px;"/>
+                            <img src="${baseUrl}Images/Met-Business-Partners.png" alt="Meta Business Partner" style="height:40px;display:inline-block;margin-right:8px;"/>
+                            <img src="${baseUrl}Images/MC-Partner-Horizontal-Final_1.png" alt="Mailchimp Partner" style="height:40px;display:inline-block;margin-right:8px;"/>
+                            <img src="${baseUrl}Images/SEMrush-Partner-Logo-1024x995.png" alt="Semrush Partner" style="height:40px;display:inline-block;"/>
+                        </td>
+                    </tr>
+                </table>`;
 
-            // Build LinkedIn HTML
-            let linkedinHtml = '';
-            if (linkedinUrl) {
-                linkedinHtml = `<a href="${escapeHtml(linkedinUrl)}" style="color: #000000; text-decoration: none;" target="_blank" rel="noopener noreferrer">${escapeHtml(linkedinText)}</a>`;
-            }
-
-            // Generate the HTML signature with exact Outlook-compatible format
-            const signatureHtml = `<table width="100%"><tr><td bordercolor="#FFFFFF"><table align="left" bgcolor="#ffffff" cellspacing="0" cellpadding="0" border="0" style="background-color:#ffffff;">
-<tbody><tr><td bordercolor="#FFFFFF" valign="top" align="left" style="padding:0px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
-<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px;"><table cellspacing="0" cellpadding="0" border="0"><tr><td bordercolor="#FFFFFF" valign="top" align="left" style="padding:0px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
-<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px 0px 5px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
-<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:16px;line-height:18px;color:#000000;padding:0px 0px;"><strong>${escapeHtml(fullName)}</strong> <br> <span style="color:#666666;text-decoration:none;font-size:12px;">${escapeHtml(jobTitle)}</span>
-</td>   
-</tr></table></td> 
-</tr>       
-</table></td></tr>${phoneHtml ? `
-<tr><td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px 0px 5px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
-<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;padding:0px 0px;">${phoneHtml}
-</td>   
-</tr></table></td></tr>` : ''}${linkedinHtml ? `
-<tr><td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px 0px 5px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
-<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;padding:0px 0px;">${linkedinHtml}
-</td>   
-</tr></table></td></tr>` : ''}
-</table></td>
-</tr></tbody>
-</table></td></tr></table>`;
+            // Generate the HTML signature matching the design
+            const signatureHtml = `<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,sans-serif;font-size:14px;color:#333333;">
+    <tbody>
+        <tr>
+            <td style="padding-right:15px;vertical-align:top;">
+                <div style="width:80px;height:80px;border-radius:50%;background-color:#ff6600;overflow:hidden;position:relative;">
+                    <img src="${profileImage}" alt="${escapeHtml(fullName)}" style="width:100%;height:100%;object-fit:cover;border:0;"/>
+                </div>
+            </td>
+            <td valign="top">
+                <table cellspacing="0" cellpadding="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="font-family:Arial,sans-serif;font-size:16px;font-weight:bold;color:#333333;padding-bottom:3px;">
+                                ${escapeHtml(fullName)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family:Arial,sans-serif;font-size:13px;color:#666666;padding-bottom:8px;">
+                                ${escapeHtml(jobTitle)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-bottom:5px;">
+                                <img src="${baseUrl}Images/Freenlance-SEO-Logo-RGB.png" alt="freelanceSEO" style="height:25px;display:block;"/>
+                            </td>
+                        </tr>
+                        ${phone ? `<tr>
+                            <td style="font-family:Arial,sans-serif;font-size:13px;color:#333333;padding-bottom:3px;">
+                                <span style="color:#ff6600;font-weight:bold;">☎</span> ${escapeHtml(phone)}
+                            </td>
+                        </tr>` : ''}
+                        ${linkedinUrl ? `<tr>
+                            <td style="font-family:Arial,sans-serif;font-size:13px;padding-bottom:8px;">
+                                <a href="${escapeHtml(linkedinUrl)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDA3N0I1Ij48cGF0aCBkPSJNMjAuNDQ3IDIwLjQ1MmgtMy41NTR2LTUuNTY5YzAtMS4zMjgtLjAyNy0zLjAzNy0xLjg1Mi0zLjAzNy0xLjg1MyAwLTIuMTM2IDEuNDQ1LTIuMTM2IDIuOTM5djUuNjY3SDkuMzUxVjloMy40MTR2MS41NjFoLjA0NmMuNDc3LS45IDEuNjM3LTEuODUgMy4zNy0xLjg1IDMuNjAxIDAgNC4yNjcgMi4zNyA0LjI2NyA1LjQ1NXY2LjI4NnpNNS4zMzcgNy40MzNjLTEuMTQ0IDAtMi4wNjMtLjkyNi0yLjA2My0yLjA2NSAwLTEuMTM4LjkyLTIuMDYzIDIuMDYzLTIuMDYzIDEuMTQgMCAyLjA2NC45MjUgMi4wNjQgMi4wNjMgMCAxLjEzOS0uOTI1IDIuMDY1LTIuMDY0IDIuMDY1em0xLjc4MiAxMy4wMTlIMy41NTVWOWgzLjU2NHYxMS40NTJ6TTIyLjIyNSAwSDEuNzcxQy43OTIgMCAwIC43NzQgMCAxLjcyOXYyMC41NDJDMCAyMy4yMjcuNzkyIDI0IDEuNzcxIDI0aDIwLjQ1MUMyMy4yIDI0IDI0IDIzLjIyNyAyNCAyMi4yNzFWMS43MjlDMjQgLjc3NCAyMy4yIDAgMjIuMjIyIDB6Ii8+PC9zdmc+" alt="LinkedIn" style="vertical-align:middle;"/>
+                                </a>
+                            </td>
+                        </tr>` : ''}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="padding-top:8px;">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZmNjYwMDtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwNjZjYztzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjY2MDA7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzIiBmaWxsPSJ1cmwoI2dyYWQpIiAvPjwvc3ZnPg==" alt="" style="width:100%;max-width:400px;height:3px;display:block;"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="padding-top:10px;">
+                <table cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <td style="padding-right:10px;"><img src="${baseUrl}Images/1729853131438.png" alt="Google Partner" style="height:35px;"/></td>
+                        <td style="padding-right:10px;"><img src="${baseUrl}Images/images.png" alt="Bing Partner" style="height:35px;"/></td>
+                        <td style="padding-right:10px;"><img src="${baseUrl}Images/Met-Business-Partners.png" alt="Meta Business Partner" style="height:35px;"/></td>
+                        <td style="padding-right:10px;"><img src="${baseUrl}Images/MC-Partner-Horizontal-Final_1.png" alt="Mailchimp Partner" style="height:35px;"/></td>
+                        <td><img src="${baseUrl}Images/SEMrush-Partner-Logo-1024x995.png" alt="Semrush Certified Agency Partner" style="height:35px;"/></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>`;
 
             // Update output
             document.getElementById('output').value = signatureHtml;
@@ -696,10 +786,12 @@
                 const fullNameEl = document.getElementById('fullName');
                 const jobTitleEl = document.getElementById('jobTitle');
                 const linkedinUrlEl = document.getElementById('linkedinUrl');
+                const profileImageEl = document.getElementById('profileImage');
                 
                 if (fullNameEl) fullNameEl.classList.remove('error');
                 if (jobTitleEl) jobTitleEl.classList.remove('error');
                 if (linkedinUrlEl) linkedinUrlEl.classList.remove('error');
+                if (profileImageEl) profileImageEl.classList.remove('error');
                 
                 const errorElements = document.querySelectorAll('.error-message');
                 errorElements.forEach(el => el.style.display = 'none');

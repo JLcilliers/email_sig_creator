@@ -583,48 +583,27 @@
                 linkedinHtml = `<a href="${escapeHtml(linkedinUrl)}" style="color: #000000; text-decoration: none;" target="_blank" rel="noopener noreferrer">${escapeHtml(linkedinText)}</a>`;
             }
 
-            // Generate the HTML signature with table-based structure for email compatibility
-            const signatureHtml = `<table width="100%" cellspacing="0" cellpadding="0" border="0">
-    <tr>
-        <td>
-            <table align="left" bgcolor="#ffffff" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff;">
-                <tbody>
-                    <tr>
-                        <td valign="top" align="left" style="padding: 0px;">
-                            <table cellspacing="0" cellpadding="0" border="0">
-                                <tr>
-                                    <td align="left" style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 16px; color: #3b3b3b; font-weight: normal; padding: 0px;">
-                                        <table cellspacing="0" cellpadding="0" border="0">
-                                            <tr>
-                                                <td align="left" style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 18px; color: #000000; padding: 0px;">
-                                                    <strong>${escapeHtml(fullName)}</strong>
-                                                    <br>
-                                                    <span style="color: #666666; text-decoration: none; font-size: 12px;">${escapeHtml(jobTitle)}</span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                ${phoneHtml ? `
-                                <tr>
-                                    <td align="left" style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 16px; color: #3b3b3b; padding-top: 8px;">
-                                        ${phoneHtml}
-                                    </td>
-                                </tr>` : ''}
-                                ${linkedinHtml ? `
-                                <tr>
-                                    <td align="left" style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 16px; padding-top: 5px;">
-                                        ${linkedinHtml}
-                                    </td>
-                                </tr>` : ''}
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-</table>`;
+            // Generate the HTML signature with exact Outlook-compatible format
+            const signatureHtml = `<table width="100%"><tr><td bordercolor="#FFFFFF"><table align="left" bgcolor="#ffffff" cellspacing="0" cellpadding="0" border="0" style="background-color:#ffffff;">
+<tbody><tr><td bordercolor="#FFFFFF" valign="top" align="left" style="padding:0px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px;"><table cellspacing="0" cellpadding="0" border="0"><tr><td bordercolor="#FFFFFF" valign="top" align="left" style="padding:0px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px 0px 5px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:16px;line-height:18px;color:#000000;padding:0px 0px;"><strong>${escapeHtml(fullName)}</strong> <br> <span style="color:#666666;text-decoration:none;font-size:12px;">${escapeHtml(jobTitle)}</span>
+</td>   
+</tr></table></td> 
+</tr>       
+</table></td></tr>${phoneHtml ? `
+<tr><td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px 0px 5px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;padding:0px 0px;">${phoneHtml}
+</td>   
+</tr></table></td></tr>` : ''}${linkedinHtml ? `
+<tr><td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;font-weight:normal;padding:0px 0px 5px;"><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td bordercolor="#FFFFFF" align="left" style="font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:16px;color:#3b3b3b;padding:0px 0px;">${linkedinHtml}
+</td>   
+</tr></table></td></tr>` : ''}
+</table></td>
+</tr></tbody>
+</table></td></tr></table>`;
 
             // Update output
             document.getElementById('output').value = signatureHtml;

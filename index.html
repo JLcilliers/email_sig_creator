@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Email Signature Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-section, .output-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        label .required {
+            color: #e74c3c;
+            margin-left: 3px;
+        }
+
+        label .hint {
+            font-weight: 400;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        input[type="text"],
+        input[type="url"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.error {
+            border-color: #e74c3c;
+            background: #fef2f2;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .preview-container {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafafa;
+            min-height: 100px;
+            margin-top: 20px;
+        }
+
+        .preview-container:empty::after {
+            content: 'Your signature preview will appear here...';
+            color: #999;
+            font-style: italic;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .success-message.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .success-message {
+                right: 10px;
+                left: 10px;
+                transform: translateY(-100px);
+            }
+
+            .success-message.show {
+                transform: translateY(0);
+            }
+        }
+
+        /* Signature styles for preview */
+        .signature-preview {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .signature-preview strong {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .signature-preview a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .signature-preview a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Email Signature Generator</h1>
+            <p>Create professional HTML email signatures in seconds</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2 class="section-title">Your Information</h2>
+                <form id="signatureForm">
+                    <div class="form-group">
+                        <label for="fullName">
+                            Full Name <span class="required">*</span>
+                        </label>
+                        <input type="text" id="fullName" required aria-required="true" placeholder="Sarah Ward" maxlength="100" pattern="^[a-zA-Z\s\-']+$" title="Name can only contain letters, spaces, hyphens, and apostrophes">
+                        <div class="error-message" id="fullName-error">Please enter your full name</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobTitle">
+                            Job Title <span class="required">*</span>
+                        </label>
+                        <input type="text" id="jobTitle" required aria-required="true" placeholder="Head of Sales & Marketing" maxlength="100">
+                        <div class="error-message" id="jobTitle-error">Please enter your job title</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone1">
+                            Primary Phone <span class="hint">(optional)</span>
+                        </label>
+                        <input type="text" id="phone1" placeholder="01245 477 449" maxlength="30" pattern="^[\d\s\+\-\(\)]+$" title="Phone number can only contain digits, spaces, and standard phone characters">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone2">
+                            Secondary Phone <span class="hint">(optional)</span>
+                        </label>
+                        <input type="text" id="phone2" placeholder="07894 860023" maxlength="30" pattern="^[\d\s\+\-\(\)]+$" title="Phone number can only contain digits, spaces, and standard phone characters">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="linkedinUrl">
+                            LinkedIn URL <span class="hint">(optional)</span>
+                        </label>
+                        <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/sarah-ward" maxlength="200" pattern="^https?:\/\/(www\.)?linkedin\.com\/.*$" title="Please enter a valid LinkedIn URL">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="linkedinText">
+                            LinkedIn Link Text <span class="hint">(optional, default: "Connect on LinkedIn")</span>
+                        </label>
+                        <input type="text" id="linkedinText" placeholder="Connect on LinkedIn" maxlength="50">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-primary" onclick="generateSignature()">
+                            Generate Signature
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="clearForm()">
+                            Clear Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="output-section" id="outputSection" style="display: none;">
+                <h2 class="section-title">Generated Signature HTML</h2>
+                <textarea id="output" rows="8" readonly aria-label="Generated HTML code"></textarea>
+                <button type="button" class="btn-success" onclick="copyToClipboard()" style="margin-top: 15px; width: 100%;">
+                    Copy to Clipboard
+                </button>
+                
+                <h2 class="section-title" style="margin-top: 40px;">Preview</h2>
+                <div class="preview-container" id="preview"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        Copied to clipboard!
+    </div>
+
+    <script>
+        'use strict';
+        
+        // Security: Enhanced HTML escaping function
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') {
+                return '';
+            }
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;")
+                .replace(/\//g, "&#x2F;")
+                .replace(/`/g, "&#x60;")
+                .replace(/=/g, "&#x3D;");
+        }
+        
+        // Security: Input sanitization function
+        function sanitizeInput(input, type = 'text') {
+            if (typeof input !== 'string') {
+                return '';
+            }
+            
+            // Remove null bytes and control characters
+            let sanitized = input.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+            
+            // Trim and limit length
+            sanitized = sanitized.trim();
+            
+            // Additional validation based on type
+            switch(type) {
+                case 'name':
+                    // Only allow letters, spaces, hyphens, and apostrophes
+                    sanitized = sanitized.replace(/[^a-zA-Z\s\-']/g, '');
+                    break;
+                case 'phone':
+                    // Only allow digits, spaces, and standard phone characters
+                    sanitized = sanitized.replace(/[^\d\s\+\-\(\)]/g, '');
+                    break;
+                case 'url':
+                    // Basic URL sanitization
+                    sanitized = sanitized.replace(/[^a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]/g, '');
+                    break;
+            }
+            
+            // Limit length as additional protection
+            return sanitized.substring(0, 500);
+        }
+        
+        // Security: Validate URL to prevent JavaScript protocol injection
+        function validateUrl(url) {
+            if (!url) return '';
+            
+            try {
+                const urlObj = new URL(url);
+                
+                // Only allow http and https protocols
+                if (!['http:', 'https:'].includes(urlObj.protocol)) {
+                    return '';
+                }
+                
+                // Additional LinkedIn-specific validation
+                if (!urlObj.hostname.includes('linkedin.com')) {
+                    return '';
+                }
+                
+                // Prevent javascript: and data: URIs
+                if (url.toLowerCase().includes('javascript:') || 
+                    url.toLowerCase().includes('data:') ||
+                    url.toLowerCase().includes('vbscript:') ||
+                    url.toLowerCase().includes('file:')) {
+                    return '';
+                }
+                
+                return url;
+            } catch (e) {
+                // If URL parsing fails, try to add https://
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    return validateUrl('https://' + url);
+                }
+                return '';
+            }
+        }
+        
+        // Security: Rate limiting for form submission
+        let lastSubmissionTime = 0;
+        const SUBMISSION_COOLDOWN = 1000; // 1 second cooldown
+        
+        function checkRateLimit() {
+            const now = Date.now();
+            if (now - lastSubmissionTime < SUBMISSION_COOLDOWN) {
+                return false;
+            }
+            lastSubmissionTime = now;
+            return true;
+        }
+        
+        // Auto-save form data to localStorage
+        const formInputs = ['fullName', 'jobTitle', 'phone1', 'phone2', 'linkedinUrl', 'linkedinText'];
+        
+        // Load saved data on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            formInputs.forEach(id => {
+                const saved = localStorage.getItem(`sig_${id}`);
+                if (saved) {
+                    document.getElementById(id).value = saved;
+                }
+            });
+        });
+
+        // Save data as user types with sanitization
+        formInputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                const sanitized = sanitizeInput(e.target.value);
+                localStorage.setItem(`sig_${id}`, sanitized);
+            });
+        });
+
+        function validateForm() {
+            let isValid = true;
+            const fullName = document.getElementById('fullName');
+            const jobTitle = document.getElementById('jobTitle');
+            const linkedinUrl = document.getElementById('linkedinUrl');
+
+            // Validate full name
+            if (!fullName.value.trim()) {
+                fullName.classList.add('error');
+                document.getElementById('fullName-error').style.display = 'block';
+                isValid = false;
+            } else if (!/^[a-zA-Z\s\-']+$/.test(fullName.value)) {
+                fullName.classList.add('error');
+                document.getElementById('fullName-error').textContent = 'Name contains invalid characters';
+                document.getElementById('fullName-error').style.display = 'block';
+                isValid = false;
+            } else {
+                fullName.classList.remove('error');
+                document.getElementById('fullName-error').style.display = 'none';
+            }
+
+            // Validate job title
+            if (!jobTitle.value.trim()) {
+                jobTitle.classList.add('error');
+                document.getElementById('jobTitle-error').style.display = 'block';
+                isValid = false;
+            } else {
+                jobTitle.classList.remove('error');
+                document.getElementById('jobTitle-error').style.display = 'none';
+            }
+            
+            // Validate LinkedIn URL if provided
+            if (linkedinUrl.value) {
+                const validatedUrl = validateUrl(linkedinUrl.value);
+                if (!validatedUrl) {
+                    linkedinUrl.classList.add('error');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.style.display = 'block';
+                    errorDiv.textContent = 'Please enter a valid LinkedIn URL';
+                    if (!document.getElementById('linkedinUrl-error')) {
+                        errorDiv.id = 'linkedinUrl-error';
+                        linkedinUrl.parentNode.appendChild(errorDiv);
+                    }
+                    isValid = false;
+                } else {
+                    linkedinUrl.classList.remove('error');
+                    const errorDiv = document.getElementById('linkedinUrl-error');
+                    if (errorDiv) {
+                        errorDiv.remove();
+                    }
+                }
+            }
+
+            return isValid;
+        }
+
+        function generateSignature() {
+            // Security: Rate limiting
+            if (!checkRateLimit()) {
+                alert('Please wait a moment before generating another signature');
+                return;
+            }
+            
+            // Validate form first
+            if (!validateForm()) {
+                return;
+            }
+
+            // Get and sanitize input values
+            const fullName = sanitizeInput(document.getElementById('fullName').value, 'name');
+            const jobTitle = sanitizeInput(document.getElementById('jobTitle').value, 'text');
+            const phone1 = sanitizeInput(document.getElementById('phone1').value, 'phone');
+            const phone2 = sanitizeInput(document.getElementById('phone2').value, 'phone');
+            const linkedinUrl = validateUrl(document.getElementById('linkedinUrl').value.trim());
+            const linkedinText = sanitizeInput(document.getElementById('linkedinText').value || 'Connect on LinkedIn', 'text');
+            
+            // Additional validation
+            if (!fullName || !jobTitle) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Build phone string with proper escaping
+            let phoneHtml = '';
+            if (phone1 || phone2) {
+                const phones = [phone1, phone2].filter(p => p).map(p => escapeHtml(p)).join(' | ');
+                phoneHtml = `${phones}<br>`;
+            }
+
+            // Build LinkedIn link with security validation
+            let linkedinHtml = '';
+            if (linkedinUrl) {
+                // URL has already been validated and sanitized
+                linkedinHtml = `<a href="${escapeHtml(linkedinUrl)}" style="color: #0066cc; text-decoration: none;" target="_blank" rel="noopener noreferrer">${escapeHtml(linkedinText)}</a>`;
+            }
+
+            // Generate the HTML signature
+            const signatureHtml = `<div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.4; color: #333;">
+    <strong style="font-size: 16px; color: #333;">${escapeHtml(fullName)}</strong><br>
+    ${escapeHtml(jobTitle)}<br><br>
+    ${phoneHtml}${linkedinHtml}
+</div>`;
+
+            // Update output
+            document.getElementById('output').value = signatureHtml;
+            
+            // Security: Safe preview rendering using textContent and createElement
+            const previewContainer = document.getElementById('preview');
+            previewContainer.innerHTML = ''; // Clear existing content
+            
+            // Create a sandboxed iframe for preview to prevent XSS
+            const safePreview = document.createElement('div');
+            safePreview.innerHTML = signatureHtml;
+            
+            // Additional XSS protection: Remove any script tags that somehow got through
+            const scripts = safePreview.querySelectorAll('script');
+            scripts.forEach(script => script.remove());
+            
+            // Remove event handlers
+            const elements = safePreview.querySelectorAll('*');
+            elements.forEach(el => {
+                // Remove all on* event attributes
+                for (let attr of el.attributes) {
+                    if (attr.name.startsWith('on')) {
+                        el.removeAttribute(attr.name);
+                    }
+                }
+            });
+            
+            previewContainer.appendChild(safePreview);
+            
+            // Show output section with smooth scroll
+            const outputSection = document.getElementById('outputSection');
+            outputSection.style.display = 'block';
+            setTimeout(() => {
+                outputSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // escapeHtml function moved to the top with enhanced security
+
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(output.value)
+                    .then(() => showSuccessMessage())
+                    .catch(() => fallbackCopy());
+            } else {
+                fallbackCopy();
+            }
+        }
+
+        function fallbackCopy() {
+            const output = document.getElementById('output');
+            output.select();
+            output.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                showSuccessMessage();
+            } catch (err) {
+                alert('Failed to copy. Please select the text and copy manually.');
+            }
+        }
+
+        function showSuccessMessage() {
+            const message = document.getElementById('successMessage');
+            message.classList.add('show');
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 3000);
+        }
+
+        function clearForm() {
+            if (confirm('Are you sure you want to clear the form? This will also clear saved data.')) {
+                formInputs.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = '';
+                        localStorage.removeItem(`sig_${id}`);
+                    }
+                });
+                
+                const outputSection = document.getElementById('outputSection');
+                if (outputSection) {
+                    outputSection.style.display = 'none';
+                }
+                
+                // Clear validation errors
+                const fullNameEl = document.getElementById('fullName');
+                const jobTitleEl = document.getElementById('jobTitle');
+                const linkedinUrlEl = document.getElementById('linkedinUrl');
+                
+                if (fullNameEl) fullNameEl.classList.remove('error');
+                if (jobTitleEl) jobTitleEl.classList.remove('error');
+                if (linkedinUrlEl) linkedinUrlEl.classList.remove('error');
+                
+                const errorElements = document.querySelectorAll('.error-message');
+                errorElements.forEach(el => el.style.display = 'none');
+            }
+        }
+
+        // Clear validation errors on input with sanitization
+        document.getElementById('fullName').addEventListener('input', function(e) {
+            // Real-time validation feedback
+            const sanitized = sanitizeInput(this.value, 'name');
+            if (sanitized !== this.value) {
+                this.value = sanitized;
+            }
+            
+            if (this.value.trim()) {
+                this.classList.remove('error');
+                const errorEl = document.getElementById('fullName-error');
+                if (errorEl) {
+                    errorEl.style.display = 'none';
+                    errorEl.textContent = 'Please enter your full name'; // Reset error message
+                }
+            }
+        });
+
+        document.getElementById('jobTitle').addEventListener('input', function() {
+            const sanitized = sanitizeInput(this.value, 'text');
+            if (sanitized !== this.value) {
+                this.value = sanitized;
+            }
+            
+            if (this.value.trim()) {
+                this.classList.remove('error');
+                const errorEl = document.getElementById('jobTitle-error');
+                if (errorEl) {
+                    errorEl.style.display = 'none';
+                }
+            }
+        });
+        
+        // Add validation for LinkedIn URL on blur
+        document.getElementById('linkedinUrl').addEventListener('blur', function() {
+            if (this.value) {
+                const validated = validateUrl(this.value);
+                if (!validated) {
+                    this.classList.add('error');
+                } else {
+                    this.classList.remove('error');
+                    const errorDiv = document.getElementById('linkedinUrl-error');
+                    if (errorDiv) {
+                        errorDiv.remove();
+                    }
+                }
+            }
+        });
+        
+        // Prevent form submission on Enter key (security measure)
+        document.getElementById('signatureForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    </script>
+</body>
+</html>

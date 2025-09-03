@@ -477,7 +477,12 @@
         // Save data as user types with sanitization
         formInputs.forEach(id => {
             document.getElementById(id).addEventListener('input', (e) => {
-                const sanitized = sanitizeInput(e.target.value);
+                let type = 'text';
+                if (id === 'fullName') type = 'name';
+                else if (id.startsWith('phone')) type = 'phone';
+                else if (id === 'linkedinUrl') type = 'url';
+                
+                const sanitized = sanitizeInput(e.target.value, type);
                 localStorage.setItem(`sig_${id}`, sanitized);
             });
         });
@@ -689,12 +694,7 @@
 
         // Clear validation errors on input with sanitization
         document.getElementById('fullName').addEventListener('input', function(e) {
-            // Real-time validation feedback
-            const sanitized = sanitizeInput(this.value, 'name');
-            if (sanitized !== this.value) {
-                this.value = sanitized;
-            }
-            
+            // Only clear validation errors, don't sanitize in real-time
             if (this.value.trim()) {
                 this.classList.remove('error');
                 const errorEl = document.getElementById('fullName-error');
@@ -706,11 +706,7 @@
         });
 
         document.getElementById('jobTitle').addEventListener('input', function() {
-            const sanitized = sanitizeInput(this.value, 'text');
-            if (sanitized !== this.value) {
-                this.value = sanitized;
-            }
-            
+            // Only clear validation errors, don't sanitize in real-time
             if (this.value.trim()) {
                 this.classList.remove('error');
                 const errorEl = document.getElementById('jobTitle-error');

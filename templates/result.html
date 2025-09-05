@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Email Signature</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content-box {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .preview-container {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        .code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .code-textarea {
+            width: 100%;
+            min-height: 200px;
+            background: transparent;
+            color: #d4d4d4;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+            outline: none;
+            line-height: 1.5;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .copy-btn.copied {
+            background: #48bb78;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .png-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .png-preview img {
+            max-width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            padding: 10px;
+        }
+        
+        .info-box {
+            background: #edf2f7;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        .info-box li {
+            margin-bottom: 5px;
+        }
+        
+        .flashes {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 12px;
+            border-radius: 8px;
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Your Email Signature is Ready!</h1>
+            <p class="subtitle">Copy the HTML code or download the PNG image</p>
+        </div>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="content-box">
+                    <div class="flashes">
+                        {% for message in messages %}
+                            <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="content-box">
+            <h2>
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                Live Preview
+            </h2>
+            <div class="preview-container">
+                {{ html_code|safe }}
+            </div>
+        </div>
+        
+        <div class="content-box">
+            <h2>
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                </svg>
+                HTML Code
+            </h2>
+            
+            <div class="info-box">
+                <h3>How to use this signature:</h3>
+                <ul>
+                    <li><strong>Gmail:</strong> Settings → See all settings → General → Signature → Create new → Paste HTML</li>
+                    <li><strong>Outlook:</strong> Settings → View all Outlook settings → Mail → Compose and reply → Email signature → Paste HTML</li>
+                    <li><strong>Apple Mail:</strong> Preferences → Signatures → Add → Paste HTML</li>
+                    <li><strong>Thunderbird:</strong> Account Settings → Signature text → Use HTML → Paste HTML</li>
+                </ul>
+            </div>
+            
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyToClipboard()">Copy HTML</button>
+                <textarea class="code-textarea" id="html-code" readonly>{{ html_code }}</textarea>
+            </div>
+        </div>
+        
+        {% if png_generated %}
+        <div class="content-box">
+            <h2>
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                PNG Image
+            </h2>
+            <div class="png-preview">
+                <img src="/static/signature.png" alt="Email Signature">
+            </div>
+            <div class="actions">
+                <a href="/download/png" class="btn btn-success">Download PNG</a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="content-box">
+            <div class="actions">
+                <a href="/" class="btn btn-primary">Create Another Signature</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function copyToClipboard() {
+            const textarea = document.getElementById('html-code');
+            const copyBtn = document.querySelector('.copy-btn');
+            
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy HTML';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                alert('Failed to copy text');
+            }
+            
+            // Clear selection
+            window.getSelection().removeAllRanges();
+        }
+    </script>
+</body>
+</html>

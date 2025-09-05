@@ -2,7 +2,20 @@
   "permissions": {
     "allow": [
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(start:*)",
+      "WebSearch",
+      "mcp__ide__getDiagnostics",
+      "Bash(node:*)",
+      "Bash(git reset:*)",
+      "Bash(claude --version)",
+      "Bash(claude doctor)",
+      "Read(/C:\\Users\\johan\\OneDrive\\Desktop\\email-signature-generator/**)",
+      "Read(/C:\\Users\\johan\\OneDrive\\Desktop\\email-signature-generator/**)"
     ],
     "deny": [],
     "ask": []

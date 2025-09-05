@@ -1,0 +1,4 @@
+Flask
+Pillow
+html2image
+Werkzeug

@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Flask
+instance/
+.webassets-cache
+
+# Virtual Environment
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+image_data.py
+*.png
+*.jpg
+*.jpeg
+temp/
+static/signature.png
+
+# Keep important images
+!Images/
+!Images/*.png
+!Images/*.jpg
+
+# Test files
+test_*.html
+test_*.js
+validate_output.html
+*.docx
+
+# Temporary files
+SIGNATURE_UPDATE_COMPLETE.md
+VALIDATION_REPORT.md
